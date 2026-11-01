@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Irfan Suherman APP UH IPS - Kuis IPS Kelas 8 Toponimi</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- SheetJS (XLSX) CDN untuk Export Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 antialiased m-0 p-0">
+
+  <!-- WRAPPER UTAMA -->
+  <div class="w-full h-screen flex overflow-hidden relative">
+
+    <!-- MOBILE BACKDROP -->
+    <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30 md:hidden hidden"></div>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed md:relative inset-y-0 left-0 z-40 w-64 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col h-full bg-white border-r border-slate-200 shrink-0">
+      <div class="p-5 flex items-center gap-3 border-b border-slate-100 bg-white">
+        <div class="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+          <i class="fa-solid fa-graduation-cap text-lg"></i>
+        </div>
+        <div>
+          <h1 class="font-extrabold text-slate-900 text-sm leading-tight">Irfan Suherman APP UH IPS</h1>
+          <p class="text-[11px] text-slate-400 font-medium">Platform Ulangan Digital</p>
+        </div>
+      </div>
+
+      <nav class="flex-1 p-4 space-y-1 overflow-y-auto bg-white">
+        <button type="button" onclick="switchTab('tab-dashboard')" id="nav-tab-dashboard" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-indigo-600 bg-indigo-50 transition cursor-pointer">
+          <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+        </button>
+        <button type="button" onclick="switchTab('tab-soal')" id="nav-tab-soal" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition cursor-pointer">
+          <i class="fa-solid fa-file-circle-plus w-5"></i> Kelola & Upload Soal
+        </button>
+        <button type="button" onclick="switchTab('tab-ujian')" id="nav-tab-ujian" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition cursor-pointer">
+          <i class="fa-solid fa-pen-to-square w-5"></i> Ruang Ujian (Siswa)
+        </button>
+        <button type="button" onclick="switchTab('tab-rekap')" id="nav-tab-rekap" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition cursor-pointer">
+          <i class="fa-solid fa-square-poll-vertical w-5"></i> Rekap Nilai
+        </button>
+      </nav>
+
+      <div class="p-4 border-t border-slate-100 bg-slate-50/50">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p id="user-profile-name" class="text-sm font-bold text-slate-800 truncate">Pak Guru / Admin</p>
+            <p id="user-profile-role" class="text-[11px] text-slate-500 truncate">Guru / Pengawas</p>
+          </div>
+        </div>
+        <button type="button" onclick="openLoginModal()" class="w-full py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Ganti Akun / Keluar
+        </button>
+      </div>
+    </aside>
+
+    <!-- KONTEN UTAMA -->
+    <div class="flex-1 flex flex-col overflow-hidden relative w-full bg-slate-50">
+      <header class="md:hidden flex-none h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 z-20">
+        <button type="button" onclick="toggleSidebar()" class="p-2 rounded-xl text-slate-600 hover:bg-slate-100 cursor-pointer">
+          <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+        <span class="font-extrabold text-slate-900 text-xs truncate">Irfan Suherman APP UH IPS</span>
+        <div class="w-8"></div>
+      </header>
+
+      <main class="flex-1 overflow-y-auto p-4 lg:p-6 space-y-6">
+
+        <!-- DASHBOARD -->
+        <section id="tab-dashboard" class="tab-content space-y-6">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Dashboard Utama</h2>
+            <p class="text-xs text-slate-500">Ringkasan aktivitas ulangan dan statistik nilai siswa.</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl"><i class="fa-solid fa-book-open"></i></div>
+              <div>
+                <p class="text-xs text-slate-400 font-medium">Total Soal</p>
+                <h3 id="stat-total-soal" class="text-2xl font-bold text-slate-900">0</h3>
+              </div>
+            </div>
+            <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl"><i class="fa-solid fa-users"></i></div>
+              <div>
+                <p class="text-xs text-slate-400 font-medium">Siswa Selesai</p>
+                <h3 id="stat-siswa-selesai" class="text-2xl font-bold text-slate-900">0</h3>
+              </div>
+            </div>
+            <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl"><i class="fa-solid fa-star"></i></div>
+              <div>
+                <p class="text-xs text-slate-400 font-medium">Rata-rata Nilai</p>
+                <h3 id="stat-ratarata-nilai" class="text-2xl font-bold text-slate-900">0</h3>
+              </div>
+            </div>
+            <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl"><i class="fa-solid fa-award"></i></div>
+              <div>
+                <p class="text-xs text-slate-400 font-medium">Kelulusan</p>
+                <h3 id="stat-kelulusan" class="text-2xl font-bold text-slate-900">0%</h3>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- KELOLA & UPLOAD SOAL -->
+        <section id="tab-soal" class="tab-content hidden space-y-6">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Manajemen & Upload Soal</h2>
+            <p class="text-xs text-slate-500">Daftar bank soal Kuis IPS Kelas 8 (Toponimi) yang aktif.</p>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 class="font-bold text-slate-800 text-sm">Daftar Bank Soal Tersimpan</h3>
+              <span id="badge-total-soal" class="text-xs bg-indigo-50 text-indigo-700 font-bold px-2.5 py-1 rounded-full">0 Soal</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-100">
+                  <tr>
+                    <th class="p-3">Kode</th>
+                    <th class="p-3">Mapel</th>
+                    <th class="p-3">Pertanyaan</th>
+                    <th class="p-3">Kunci</th>
+                  </tr>
+                </thead>
+                <tbody id="table-soal-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- RUANG UJIAN SISWA -->
+        <section id="tab-ujian" class="tab-content hidden space-y-6">
+          <div class="flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+            <div>
+              <h2 class="text-base font-bold text-slate-900">Ruang Ujian Online (Kuis IPS Kelas 8)</h2>
+              <p id="student-exam-info" class="text-xs text-slate-500">Siswa: Belum Login | Kelas: -</p>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] uppercase font-bold text-slate-400 block">Status</span>
+              <span id="exam-timer" class="text-sm font-extrabold text-indigo-600 font-mono">Siap Mengerjakan</span>
+            </div>
+          </div>
+          <div id="exam-container" class="space-y-4 pb-12"></div>
+        </section>
+
+        <!-- REKAP NILAI (DENGAN TOMBOL EKSPOR EXCEL) -->
+        <section id="tab-rekap" class="tab-content hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h2 class="text-xl font-bold text-slate-900">Rekap Nilai Siswa</h2>
+              <p class="text-xs text-slate-500">Hasil penilaian ujian harian siswa.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="exportRekapExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-sm cursor-pointer">
+                <i class="fa-solid fa-file-excel"></i> Ekspor ke Excel (.xlsx)
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-100">
+                  <tr>
+                    <th class="p-3">Waktu</th>
+                    <th class="p-3">Nama Siswa</th>
+                    <th class="p-3">Kelas</th>
+                    <th class="p-3">Skor</th>
+                    <th class="p-3 font-bold text-slate-800">Nilai Akhir</th>
+                  </tr>
+                </thead>
+                <tbody id="table-rekap-body" class="divide-y divide-slate-100"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL LOGIN -->
+  <div id="login-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-5">
+      <div class="text-center space-y-1">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl mx-auto shadow-lg shadow-indigo-500/30">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-900 pt-2">Masuk Irfan Suherman APP UH IPS</h3>
+        <p class="text-xs text-slate-500">Pilih tipe akun untuk melanjutkan</p>
+      </div>
+
+      <div class="flex bg-slate-100 p-1 rounded-xl gap-1">
+        <button type="button" id="btn-role-student" onclick="switchLoginRole('student')" class="flex-1 py-2 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm transition cursor-pointer">Siswa</button>
+        <button type="button" id="btn-role-admin" onclick="switchLoginRole('admin')" class="flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 transition cursor-pointer">Guru / Pengawas</button>
+      </div>
+
+      <!-- FORM LOGIN SISWA -->
+      <form id="form-login-siswa" onsubmit="handleLoginSiswa(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Nama Siswa</label>
+          <input type="text" id="login-student-name" required placeholder="Ketik nama lengkap kamu..." class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-indigo-500">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Kelas</label>
+          <select id="login-student-class" required class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-indigo-500">
+            <option value="Kelas 7">Kelas 7</option>
+            <option value="Kelas 8" selected>Kelas 8</option>
+            <option value="Kelas 9">Kelas 9</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition text-xs shadow-lg shadow-indigo-500/25 cursor-pointer">
+          Masuk & Mulai Ujian <i class="fa-solid fa-arrow-right ml-1"></i>
+        </button>
+      </form>
+
+      <!-- FORM LOGIN ADMIN -->
+      <form id="form-login-admin" onsubmit="handleLoginAdmin(event)" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Username Admin</label>
+          <input type="text" id="login-admin-user" required placeholder="admin" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-indigo-500">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+          <input type="password" id="login-admin-pass" required placeholder="123" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-indigo-500">
+        </div>
+        <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition text-xs shadow-md cursor-pointer">
+          Masuk Administrator <i class="fa-solid fa-shield-halved ml-1"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-4 py-3 rounded-2xl text-xs font-semibold shadow-2xl transition-all duration-300 opacity-0 pointer-events-none flex items-center gap-2">
+    <i class="fa-solid fa-circle-info text-indigo-400"></i>
+    <span id="toast-msg">Pesan</span>
+  </div>
+
+  <!-- SKRIP APLIKASI -->
+  <script>
+    const PREVIEW_MODE = true; /* GANTI */
+    const APP_URL = "URL_GAS_KAMU_DISINI"; /* GANTI */
+    let currentUser = { role: "admin", name: "Pak Guru / Admin", class: "Guru" };
+    
+    let questionsList = [
+      { id: "Q01", subject: "IPS", question: "Apa yang dimaksud dengan ilmu toponimi dalam kajian geografi dan IPS?", optionA: "Ilmu yang mempelajari bentuk muka bumi", optionB: "Ilmu tentang asal-usul nama tempat", optionC: "Ilmu tentang pemetaan wilayah perbatasan", optionD: "Ilmu yang mengukur kepadatan penduduk", key: "B" },
+      { id: "Q02", subject: "IPS", question: "Secara etimologis, nama kota 'Semarang' berasal dari gabungan kata...", optionA: "Semak dan Rindang", optionB: "Asem dan Jarang", optionC: "Semadi dan Terang", optionD: "Asem dan Rindang", key: "B" },
+      { id: "Q03", subject: "IPS", question: "Manakah nama daerah berikut yang penamaannya berdasarkan aspek Fitotoponimi (vegetasi/tumbuhan)?", optionA: "Gambir", optionB: "Cirebon", optionC: "Bukit Tinggi", optionD: "Kampung Melayu", key: "A" },
+      { id: "Q04", subject: "IPS", question: "Toponimi kota 'Surabaya' identik dengan legenda pertarungan antara dua hewan, yaitu...", optionA: "Singa dan Harimau", optionB: "Hiu dan Buaya", optionC: "Gajah dan Monyet", optionD: "Ular dan Elang", key: "B" },
+      { id: "Q05", subject: "IPS", question: "Nama wilayah yang dipengaruhi oleh aspek Hidrotoponimi (unsur perairan) ditunjukkan oleh nama...", optionA: "Gunungkidul", optionB: "Cirebon", optionC: "Kebayoran", optionD: "Karanganyar", key: "B" },
+      { id: "Q06", subject: "IPS", question: "Urutan kronologis perubahan toponimi nama kota 'Jakarta' dari masa tertua adalah...", optionA: "Batavia - Jayakarta - Sunda Kelapa - Jakarta", optionB: "Sunda Kelapa - Jayakarta - Batavia - Jakarta", optionC: "Jayakarta - Sunda Kelapa - Batavia - Jakarta", optionD: "Sunda Kelapa - Batavia - Jayakarta - Jakarta", key: "B" },
+      { id: "Q07", subject: "IPS", question: "Berasal dari bahasa Sanskerta, nama kota 'Jayapura' memiliki arti...", optionA: "Kota Kemenangan", optionB: "Kota Perdagangan", optionC: "Kota Pegunungan", optionD: "Kota Pelabuhan", key: "A" },
+      { id: "Q08", subject: "IPS", question: "Aspek antropogenik atau kegiatan aktivitas manusia mempengaruhi toponimi pada tempat...", optionA: "Pasar Minggu", optionB: "Kalibata", optionC: "Muara Karang", optionD: "Pohon Nangka", key: "A" },
+      { id: "Q09", subject: "IPS", question: "Banyak nama daerah di Jawa Barat diawali dengan kata 'Ci-' (seperti Cikini, Cibubur). Imbuhan 'Ci-' berasal dari bahasa Sunda yang berarti...", optionA: "Bukit", optionB: "Air / Sungai", optionC: "Pohon", optionD: "Pasar", key: "B" },
+      { id: "Q10", subject: "IPS", question: "Penamaan kota 'Bukittinggi' di Sumatera Barat didasarkan pada aspek toponimi...", optionA: "Hidrologi", optionB: "Vegetasi", optionC: "Bentuk relief / Morfologi alam", optionD: "Nama tokoh pahlawan", key: "C" },
+      { id: "Q11", subject: "IPS", question: "Penamaan jalan atau daerah yang diambil dari nama tokoh atau pahlawan dinamakan toponimi berbasis...", optionA: "Eponim", optionB: "Zootoponimi", optionC: "Hidrotoponimi", optionD: "Fitotoponimi", key: "A" },
+      { id: "Q12", subject: "IPS", question: "Nama kawasan 'Jatinegara' di DKI Jakarta memiliki kaitan sejarah dengan kata bahasa Sunda/Jawa yang bermakna...", optionA: "Hutan Kayu Jati", optionB: "Pemerintahan Sejati", optionC: "Tanah Kerajaan", optionD: "Benteng Pertahanan", key: "B" },
+      { id: "Q13", subject: "IPS", question: "Manakah daerah berikut ini yang nama tempatnya termasuk dalam kategori Fitotoponimi?", optionA: "Menteng", optionB: "Tanjung Priok", optionC: "Glodok", optionD: "Rawamangun", key: "A" },
+      { id: "Q14", subject: "IPS", question: "Asal-usul penamaan kota 'Pontianak' di Kalimantan Barat secara cerita rakyat lokal dihubungkan dengan...", optionA: "Penemuan intan terbesar di sungai", optionB: "Keberadaan makhluk halus Kuntilanak / Pontianak", optionC: "Nama pohon ponti yang tumbuh di pesisir", optionD: "Nama raja pertama kerajaan Melayu", key: "B" },
+      { id: "Q15", subject: "IPS", question: "Nama daerah 'Yogyakarta' berasal dari bahasa Sanskerta 'Ayodhya' dan 'Karta' yang memiliki arti...", optionA: "Kota yang Makmur dan Damai", optionB: "Wilayah Istimewa dan Suci", optionC: "Kerajaan yang Kuat", optionD: "Lembah yang Subur", key: "A" },
+      { id: "Q16", subject: "IPS", question: "Mengapa pembakuan nama rupabumi (toponimi standar) sangat penting bagi suatu negara?", optionA: "Untuk menambah daya tarik wisatawan asing saja", optionB: "Menjaga kedaulatan wilayah dan tertib pemetaan", optionC: "Menghilangkan sejarah nama daerah kuno", optionD: "Mengganti nama tempat dengan bahasa asing", key: "B" },
+      { id: "Q17", subject: "IPS", question: "Toponimi daerah 'Banyuwangi' di Jawa Timur secara harfiah berarti...", optionA: "Air yang Jernih", optionB: "Air yang Harum", optionC: "Sungai yang Deras", optionD: "Lautan yang Luas", key: "B" },
+      { id: "Q18", subject: "IPS", question: "Nama daerah 'Glodok' di Jakarta berasal dari fenomena tiruan bunyi (onomatope) yang bersumber dari...", optionA: "Suara kereta kuda yang melintas", optionB: "Bunyi kocokan obat di apotek", optionC: "Suara air kucuran pancuran kayu", optionD: "Bunyi lonceng gereja tua", key: "C" },
+      { id: "Q19", subject: "IPS", question: "Penamaan daerah yang dipengaruhi oleh nama etnis atau suku yang mendiaminya dinamakan Etnotoponimi. Contohnya adalah...", optionA: "Kampung Melayu", optionB: "Kebayoran Baru", optionC: "Gunung Sahari", optionD: "Pondok Indah", key: "A" },
+      { id: "Q20", subject: "IPS", question: "Lembaga pemerintah Indonesia yang berwenang dalam mengoordinasikan pembakuan nama-nama rupabumi secara nasional adalah...", optionA: "BMKG", optionB: "Badan Informasi Geospasial (BIG)", optionC: "BPS", optionD: "Kementerian Pariwisata", key: "B" },
+      { id: "Q21", subject: "IPS", question: "Di bawah ini yang merupakan contoh penamaan tempat berbasis unsur geologi atau batuan (Litotoponimi) adalah...", optionA: "Cadas Pangeran", optionB: "Kaliurang", optionC: "Pasir Putih", optionD: "Danau Toba", key: "A" },
+      { id: "Q22", subject: "IPS", question: "Menurut asal-usul bahasa Karonese 'Madana' atau Melayu, nama kota 'Medan' bermakna...", optionA: "Pelabuhan yang ramai", optionB: "Tanah lapang / tempat berkumpul", optionC: "Hutan rimba yang lebat", optionD: "Pertemuan dua sungai", key: "B" },
+      { id: "Q23", subject: "IPS", question: "Toponimi yang diambil dari bentuk relief daratan yang menjorok ke laut dinamakan...", optionA: "Teluk", optionB: "Tanjung (contoh: Tanjung Harapan)", optionC: "Selat", optionD: "Muara", key: "B" },
+      { id: "Q24", subject: "IPS", question: "Selain sebagai identitas geografis, nama tempat dalam toponimi juga berfungsi sebagai...", optionA: "Penyimpan memori kolektif sejarah dan budaya", optionB: "Alat penentu batas wilayah internasional saja", optionC: "Penentu harga tanah di wilayah tersebut", optionD: "Syarat pembentukan wilayah administratif baru", key: "A" },
+      { id: "Q25", subject: "IPS", question: "Kota 'Kupang' di Nusa Tenggara Timur berasal dari nama seorang raja lokal yang berkuasa pada masa lalu, yaitu...", optionA: "Raja Buleleng", optionB: "Nai Kopan", optionC: "Sultan Hasanuddin", optionD: "Raja Sisingamangaraja", key: "B" }
+    ];
+    let rekapResults = [];
+    let userAnswers = {};
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      t.classList.remove('opacity-0', 'pointer-events-none');
+      setTimeout(() => t.classList.add('opacity-0', 'pointer-events-none'), 3000);
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      const active = document.getElementById(tabId);
+      if (active) active.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList.remove('bg-indigo-50', 'text-indigo-600');
+        el.classList.add('text-slate-600');
+      });
+      const activeNav = document.getElementById('nav-' + tabId);
+      if (activeNav) {
+        activeNav.classList.add('bg-indigo-50', 'text-indigo-600');
+        activeNav.classList.remove('text-slate-600');
+      }
+
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.add('-translate-x-full');
+        backdrop.classList.add('hidden');
+      }
+
+      if (tabId === 'tab-dashboard') updateStats();
+      if (tabId === 'tab-soal') renderQuestionTable();
+      if (tabId === 'tab-ujian') renderExamPage();
+      if (tabId === 'tab-rekap') renderRekapTable();
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('-translate-x-full');
+      document.getElementById('sidebar-backdrop').classList.toggle('hidden');
+    }
+
+    function switchLoginRole(role) {
+      const btnStudent = document.getElementById('btn-role-student');
+      const btnAdmin = document.getElementById('btn-role-admin');
+      const formStudent = document.getElementById('form-login-siswa');
+      const formAdmin = document.getElementById('form-login-admin');
+
+      if (role === 'student') {
+        btnStudent.className = "flex-1 py-2 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm transition cursor-pointer";
+        btnAdmin.className = "flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 transition cursor-pointer";
+        formStudent.classList.remove('hidden');
+        formAdmin.classList.add('hidden');
+      } else {
+        btnAdmin.className = "flex-1 py-2 rounded-lg text-xs font-bold bg-white text-indigo-600 shadow-sm transition cursor-pointer";
+        btnStudent.className = "flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 transition cursor-pointer";
+        formAdmin.classList.remove('hidden');
+        formStudent.classList.add('hidden');
+      }
+    }
+
+    function openLoginModal() {
+      document.getElementById('login-modal').classList.remove('hidden');
+    }
+
+    function handleLoginSiswa(e) {
+      e.preventDefault();
+      const name = document.getElementById('login-student-name').value.trim();
+      const studentClass = document.getElementById('login-student-class').value;
+      if (!name) return showToast("Silakan ketik nama kamu!");
+
+      currentUser = { role: "student", name, class: studentClass };
+      document.getElementById('user-profile-name').textContent = name;
+      document.getElementById('user-profile-role').textContent = `Siswa (${studentClass})`;
+      
+      // Menutup modal login secara total
+      document.getElementById('login-modal').classList.add('hidden');
+      
+      showToast(`Selamat datang, ${name}!`);
+      switchTab('tab-ujian');
+    }
+
+    function handleLoginAdmin(e) {
+      e.preventDefault();
+      const u = document.getElementById('login-admin-user').value.trim();
+      const p = document.getElementById('login-admin-pass').value.trim();
+
+      if (u === 'admin' && p === '123') {
+        currentUser = { role: "admin", name: "Pak Guru / Admin", class: "Guru" };
+        document.getElementById('user-profile-name').textContent = "Pak Guru / Admin";
+        document.getElementById('user-profile-role').textContent = "Guru / Pengawas";
+        
+        // Menutup modal login secara total
+        document.getElementById('login-modal').classList.add('hidden');
+        
+        showToast("Login Admin Berhasil!");
+        switchTab('tab-dashboard');
+      } else {
+        showToast("Username/Password salah! (admin / 123)");
+      }
+    }
+
+    function renderQuestionTable() {
+      const tbody = document.getElementById('table-soal-body');
+      document.getElementById('badge-total-soal').textContent = `${questionsList.length} Soal`;
+      tbody.innerHTML = questionsList.map((q) => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="p-3 font-mono text-slate-400">${q.id}</td>
+          <td class="p-3 font-semibold text-slate-700">${q.subject}</td>
+          <td class="p-3 max-w-md truncate">${q.question}</td>
+          <td class="p-3 font-bold text-indigo-600">${q.key}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderExamPage() {
+      const info = document.getElementById('student-exam-info');
+      info.textContent = `Siswa: ${currentUser.name} | ${currentUser.class}`;
+      const container = document.getElementById('exam-container');
+
+      if (questionsList.length === 0) {
+        container.innerHTML = `<div class="p-8 text-center bg-white rounded-2xl border border-slate-100 text-slate-400">Belum ada soal ulangan.</div>`;
+        return;
+      }
+
+      container.innerHTML = questionsList.map((q, idx) => `
+        <div class="p-5 bg-white rounded-2xl border border-slate-100 shadow-sm space-y-3">
+          <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">Soal #${idx + 1} (${q.subject})</span>
+          <p class="font-medium text-slate-800 text-sm">${q.question}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+            ${['A', 'B', 'C', 'D'].map(opt => `
+              <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition">
+                <input type="radio" name="q_${q.id}" value="${opt}" onchange="userAnswers['${q.id}'] = '${opt}'" class="text-indigo-600 focus:ring-indigo-500">
+                <span class="text-xs font-medium text-slate-700">${opt}. ${q['option' + opt] || ''}</span>
+              </label>
+            `).join('')}
+          </div>
+        </div>
+      `).join('') + `
+        <button type="button" onclick="submitExam()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-emerald-500/20 mb-10 cursor-pointer">
+          Selesaikan Ujian & Kirim Nilai <i class="fa-solid fa-check ml-1"></i>
+        </button>
+      `;
+    }
+
+    function submitExam() {
+      let correct = 0;
+      questionsList.forEach(q => {
+        if (userAnswers[q.id] === q.key) correct++;
+      });
+      const score = Math.round((correct / questionsList.length) * 100);
+
+      rekapResults.unshift({
+        time: new Date().toLocaleTimeString(),
+        name: currentUser.name,
+        class: currentUser.class,
+        correct,
+        total: questionsList.length,
+        score
+      });
+
+      showToast(`Ujian Selesai! Nilai kamu: ${score}`);
+      userAnswers = {};
+      switchTab('tab-rekap');
+    }
+
+    function renderRekapTable() {
+      const tbody = document.getElementById('table-rekap-body');
+      if (rekapResults.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400">Belum ada rekap nilai siswa.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = rekapResults.map(r => `
+        <tr class="hover:bg-slate-50 transition">
+          <td class="p-3 text-slate-400 font-mono">${r.time}</td>
+          <td class="p-3 font-bold text-slate-800">${r.name}</td>
+          <td class="p-3 text-slate-600">${r.class}</td>
+          <td class="p-3 text-slate-600">${r.correct} / ${r.total}</td>
+          <td class="p-3 font-extrabold text-indigo-600 text-sm">${r.score}</td>
+        </tr>
+      `).join('');
+    }
+
+    function exportRekapExcel() {
+      if (rekapResults.length === 0) {
+        showToast("Tidak ada data rekap untuk diekspor!");
+        return;
+      }
+      if (typeof XLSX === 'undefined') {
+        showToast("Library Excel sedang dimuat, coba lagi sebentar.");
+        return;
+      }
+      const wsData = [
+        ["Waktu", "Nama Siswa", "Kelas", "Benar", "Total Soal", "Nilai Akhir"],
+        ...rekapResults.map(r => [r.time, r.name, r.class, r.correct, r.total, r.score])
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Rekap Nilai Irfan Suherman APP UH IPS");
+      XLSX.writeFile(wb, "Rekap_Nilai_Irfan_Suherman_APP_UH_IPS.xlsx");
+      showToast("File Excel rekap nilai berhasil diunduh!");
+    }
+
+    function updateStats() {
+      document.getElementById('stat-total-soal').textContent = questionsList.length;
+      document.getElementById('stat-siswa-selesai').textContent = rekapResults.length;
+      const avg = rekapResults.length ? Math.round(rekapResults.reduce((a, b) => a + b.score, 0) / rekapResults.length) : 0;
+      document.getElementById('stat-ratarata-nilai').textContent = avg;
+      const passed = rekapResults.filter(r => r.score >= 75).length;
+      const rate = rekapResults.length ? Math.round((passed / rekapResults.length) * 100) : 0;
+      document.getElementById('stat-kelulusan').textContent = rate + "%";
+    }
+
+    window.onload = function() {
+      updateStats();
+    };
+  </script>
+</body>
+</html>
